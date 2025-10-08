@@ -26,7 +26,7 @@ Inspired by Rust’s `Result<T, E>` and Kotlin’s `Result`, it provides a safe 
 
 - ✅ Simple, expressive success/failure handling
 - ⚡️ No exceptions — results you can trust
-- 🧠 Composable: map, flatMap, fold, and more
+- 🧠 Composable: then, catchError, and more
 - 🧩 Works seamlessly with async/await
 
 ---

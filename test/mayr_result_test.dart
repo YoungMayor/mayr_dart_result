@@ -183,140 +183,55 @@ void main() {
       });
     });
 
-    group('map', () {
+    group('then', () {
       test('transforms Ok value', () {
         final result = Ok<int, String>(42);
-        final mapped = result.map((value) => value * 2);
+        final transformed = result.then((value) => value * 2);
 
-        expect(mapped.isOk, isTrue);
-        expect(mapped.value, equals(84));
+        expect(transformed.isOk, isTrue);
+        expect(transformed.value, equals(84));
       });
 
       test('preserves Err unchanged', () {
         final result = Err<int, String>('error');
-        final mapped = result.map((value) => value * 2);
+        final transformed = result.then((value) => value * 2);
 
-        expect(mapped.isErr, isTrue);
-        expect(mapped.error, equals('error'));
+        expect(transformed.isErr, isTrue);
+        expect(transformed.error, equals('error'));
       });
 
       test('can change type', () {
         final result = Ok<int, String>(42);
-        final mapped = result.map((value) => value.toString());
+        final transformed = result.then((value) => value.toString());
 
-        expect(mapped.isOk, isTrue);
-        expect(mapped.value, equals('42'));
+        expect(transformed.isOk, isTrue);
+        expect(transformed.value, equals('42'));
       });
     });
 
-    group('mapErr', () {
+    group('catchError', () {
       test('transforms Err value', () {
         final result = Err<int, String>('error');
-        final mapped = result.mapErr((error) => 'Error: $error');
+        final caught = result.catchError((error) => 'Error: $error');
 
-        expect(mapped.isErr, isTrue);
-        expect(mapped.error, equals('Error: error'));
+        expect(caught.isErr, isTrue);
+        expect(caught.error, equals('Error: error'));
       });
 
       test('preserves Ok unchanged', () {
         final result = Ok<int, String>(42);
-        final mapped = result.mapErr((error) => 'Error: $error');
+        final caught = result.catchError((error) => 'Error: $error');
 
-        expect(mapped.isOk, isTrue);
-        expect(mapped.value, equals(42));
+        expect(caught.isOk, isTrue);
+        expect(caught.value, equals(42));
       });
 
       test('can change error type', () {
         final result = Err<int, String>('error');
-        final mapped = result.mapErr((error) => error.length);
+        final caught = result.catchError((error) => error.length);
 
-        expect(mapped.isErr, isTrue);
-        expect(mapped.error, equals(5));
-      });
-    });
-
-    group('flatMap', () {
-      test('chains Ok results', () {
-        final result = Ok<int, String>(42);
-        final chained = result.flatMap((value) => Ok<int, String>(value * 2));
-
-        expect(chained.isOk, isTrue);
-        expect(chained.value, equals(84));
-      });
-
-      test('short-circuits on Err', () {
-        final result = Err<int, String>('error');
-        final chained = result.flatMap((value) => Ok<int, String>(value * 2));
-
-        expect(chained.isErr, isTrue);
-        expect(chained.error, equals('error'));
-      });
-
-      test('chains to Err result', () {
-        final result = Ok<int, String>(0);
-        final chained = result.flatMap((value) {
-          if (value == 0) return Err<int, String>('Cannot be zero');
-          return Ok<int, String>(100 ~/ value);
-        });
-
-        expect(chained.isErr, isTrue);
-        expect(chained.error, equals('Cannot be zero'));
-      });
-
-      test('can be chained multiple times', () {
-        final result = Ok<int, String>(5)
-            .flatMap((v) => Ok<int, String>(v * 2))
-            .flatMap((v) => Ok<int, String>(v + 10))
-            .flatMap((v) => Ok<int, String>(v * 3));
-
-        expect(result.isOk, isTrue);
-        expect(result.value, equals(60)); // (5 * 2 + 10) * 3 = 60
-      });
-    });
-
-    group('fold', () {
-      test('applies onOk for Ok result', () {
-        final result = Ok<int, String>(42);
-        final folded = result.fold(
-          onOk: (value) => value * 2,
-          onErr: (error) => 0,
-        );
-
-        expect(folded, equals(84));
-      });
-
-      test('applies onErr for Err result', () {
-        final result = Err<int, String>('error');
-        final folded = result.fold(
-          onOk: (value) => value,
-          onErr: (error) => error.length,
-        );
-
-        expect(folded, equals(5));
-      });
-    });
-
-    group('unwrapOr', () {
-      test('returns value for Ok result', () {
-        final result = Ok<int, String>(42);
-        expect(result.unwrapOr(0), equals(42));
-      });
-
-      test('returns default for Err result', () {
-        final result = Err<int, String>('error');
-        expect(result.unwrapOr(0), equals(0));
-      });
-    });
-
-    group('unwrapOrElse', () {
-      test('returns value for Ok result', () {
-        final result = Ok<int, String>(42);
-        expect(result.unwrapOrElse((error) => 0), equals(42));
-      });
-
-      test('computes default for Err result', () {
-        final result = Err<int, String>('error');
-        expect(result.unwrapOrElse((error) => error.length), equals(5));
+        expect(caught.isErr, isTrue);
+        expect(caught.error, equals(5));
       });
     });
 
@@ -351,31 +266,11 @@ void main() {
         expect(result2.error, equals('Not a number: not a number'));
       });
 
-      test('chaining operations', () {
-        final result = parseNumber(
-          '10',
-        ).flatMap((n) => divide(100, n)).map((n) => n * 2);
+      test('chaining operations with then', () {
+        final result = divide(10, 2).then((n) => n * 2);
 
         expect(result.isOk, isTrue);
-        expect(result.value, equals(20)); // (100 / 10) * 2 = 20
-      });
-
-      test('error propagation in chains', () {
-        final result = parseNumber(
-          'not a number',
-        ).flatMap((n) => divide(100, n)).map((n) => n * 2);
-
-        expect(result.isErr, isTrue);
-        expect(result.error, contains('Not a number'));
-      });
-
-      test('division by zero in chain', () {
-        final result = parseNumber(
-          '0',
-        ).flatMap((n) => divide(100, n)).map((n) => n * 2);
-
-        expect(result.isErr, isTrue);
-        expect(result.error, equals('Cannot divide by zero'));
+        expect(result.value, equals(10)); // (10 / 2) * 2 = 10
       });
 
       test('handling with when', () {
@@ -386,16 +281,6 @@ void main() {
         );
 
         expect(message, equals('Result: 5'));
-      });
-
-      test('handling with fold', () {
-        final okResult = divide(10, 2);
-        final value1 = okResult.fold(onOk: (v) => v, onErr: (e) => -1);
-        expect(value1, equals(5));
-
-        final errResult = divide(10, 0);
-        final value2 = errResult.fold(onOk: (v) => v, onErr: (e) => -1);
-        expect(value2, equals(-1));
       });
     });
 

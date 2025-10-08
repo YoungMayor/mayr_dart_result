@@ -103,7 +103,7 @@ sealed class MayrResult<T, E> {
     }
   }
 
-  /// Maps the success value using [transform].
+  /// Transforms the success value using [transform].
   ///
   /// Returns a new [MayrResult] with the transformed value if this is [Ok].
   /// Returns the same [Err] if this is [Err].
@@ -111,9 +111,9 @@ sealed class MayrResult<T, E> {
   /// Example:
   /// ```dart
   /// final result = Ok<int, String>(5);
-  /// final doubled = result.map((value) => value * 2); // Ok(10)
+  /// final doubled = result.then((value) => value * 2); // Ok(10)
   /// ```
-  MayrResult<R, E> map<R>(R Function(T value) transform) {
+  MayrResult<R, E> then<R>(R Function(T value) transform) {
     final self = this;
     if (self is Ok<T, E>) {
       return Ok(transform(self._value));
@@ -122,7 +122,7 @@ sealed class MayrResult<T, E> {
     }
   }
 
-  /// Maps the error value using [transform].
+  /// Transforms the error value using [transform].
   ///
   /// Returns a new [MayrResult] with the transformed error if this is [Err].
   /// Returns the same [Ok] if this is [Ok].
@@ -130,90 +130,14 @@ sealed class MayrResult<T, E> {
   /// Example:
   /// ```dart
   /// final result = Err<int, String>('error');
-  /// final mapped = result.mapErr((e) => 'Error: $e');
+  /// final caught = result.catchError((e) => 'Error: $e');
   /// ```
-  MayrResult<T, F> mapErr<F>(F Function(E error) transform) {
+  MayrResult<T, F> catchError<F>(F Function(E error) transform) {
     final self = this;
     if (self is Err<T, E>) {
       return Err(transform(self._error));
     } else {
       return Ok((self as Ok<T, E>)._value);
-    }
-  }
-
-  /// Chains this result with another operation that returns a [MayrResult].
-  ///
-  /// This is useful for chaining operations that can fail.
-  /// Also known as `andThen` or `bind` in functional programming.
-  ///
-  /// Example:
-  /// ```dart
-  /// MayrResult<int, String> parseNumber(String s) {
-  ///   final n = int.tryParse(s);
-  ///   return n != null ? Ok(n) : Err('Not a number');
-  /// }
-  ///
-  /// MayrResult<int, String> double(int n) => Ok(n * 2);
-  ///
-  /// final result = parseNumber('5').flatMap(double); // Ok(10)
-  /// ```
-  MayrResult<R, E> flatMap<R>(MayrResult<R, E> Function(T value) transform) {
-    final self = this;
-    if (self is Ok<T, E>) {
-      return transform(self._value);
-    } else {
-      return Err((self as Err<T, E>)._error);
-    }
-  }
-
-  /// Combines success and error cases into a single value.
-  ///
-  /// Applies [onOk] to the success value or [onErr] to the error value.
-  ///
-  /// Example:
-  /// ```dart
-  /// final result = Ok<int, String>(5);
-  /// final value = result.fold(
-  ///   onOk: (v) => v * 2,
-  ///   onErr: (e) => 0,
-  /// ); // 10
-  /// ```
-  R fold<R>({
-    required R Function(T value) onOk,
-    required R Function(E error) onErr,
-  }) {
-    return when(ok: onOk, err: onErr);
-  }
-
-  /// Returns the success value or a default value if this is [Err].
-  ///
-  /// Example:
-  /// ```dart
-  /// final result = Err<int, String>('error');
-  /// final value = result.unwrapOr(0); // 0
-  /// ```
-  T unwrapOr(T defaultValue) {
-    final self = this;
-    if (self is Ok<T, E>) {
-      return self._value;
-    } else {
-      return defaultValue;
-    }
-  }
-
-  /// Returns the success value or computes a default value if this is [Err].
-  ///
-  /// Example:
-  /// ```dart
-  /// final result = Err<int, String>('error');
-  /// final value = result.unwrapOrElse((e) => e.length); // 5
-  /// ```
-  T unwrapOrElse(T Function(E error) defaultValue) {
-    final self = this;
-    if (self is Ok<T, E>) {
-      return self._value;
-    } else {
-      return defaultValue((self as Err<T, E>)._error);
     }
   }
 
