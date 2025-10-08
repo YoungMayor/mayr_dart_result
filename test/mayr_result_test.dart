@@ -352,27 +352,27 @@ void main() {
       });
 
       test('chaining operations', () {
-        final result = parseNumber('10')
-            .flatMap((n) => divide(100, n))
-            .map((n) => n * 2);
+        final result = parseNumber(
+          '10',
+        ).flatMap((n) => divide(100, n)).map((n) => n * 2);
 
         expect(result.isOk, isTrue);
         expect(result.value, equals(20)); // (100 / 10) * 2 = 20
       });
 
       test('error propagation in chains', () {
-        final result = parseNumber('not a number')
-            .flatMap((n) => divide(100, n))
-            .map((n) => n * 2);
+        final result = parseNumber(
+          'not a number',
+        ).flatMap((n) => divide(100, n)).map((n) => n * 2);
 
         expect(result.isErr, isTrue);
         expect(result.error, contains('Not a number'));
       });
 
       test('division by zero in chain', () {
-        final result = parseNumber('0')
-            .flatMap((n) => divide(100, n))
-            .map((n) => n * 2);
+        final result = parseNumber(
+          '0',
+        ).flatMap((n) => divide(100, n)).map((n) => n * 2);
 
         expect(result.isErr, isTrue);
         expect(result.error, equals('Cannot divide by zero'));
@@ -390,17 +390,11 @@ void main() {
 
       test('handling with fold', () {
         final okResult = divide(10, 2);
-        final value1 = okResult.fold(
-          onOk: (v) => v,
-          onErr: (e) => -1,
-        );
+        final value1 = okResult.fold(onOk: (v) => v, onErr: (e) => -1);
         expect(value1, equals(5));
 
         final errResult = divide(10, 0);
-        final value2 = errResult.fold(
-          onOk: (v) => v,
-          onErr: (e) => -1,
-        );
+        final value2 = errResult.fold(onOk: (v) => v, onErr: (e) => -1);
         expect(value2, equals(-1));
       });
     });

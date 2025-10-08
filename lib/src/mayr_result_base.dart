@@ -219,17 +219,14 @@ sealed class MayrResult<T, E> {
 
   @override
   String toString() {
-    return when(
-      ok: (value) => 'Ok($value)',
-      err: (error) => 'Err($error)',
-    );
+    return when(ok: (value) => 'Ok($value)', err: (error) => 'Err($error)');
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! MayrResult<T, E>) return false;
-    
+
     return when(
       ok: (value) => other is Ok<T, E> && other._value == value,
       err: (error) => other is Err<T, E> && other._error == error,
@@ -238,9 +235,9 @@ sealed class MayrResult<T, E> {
 
   @override
   int get hashCode => when(
-        ok: (value) => Object.hash('Ok', value),
-        err: (error) => Object.hash('Err', error),
-      );
+    ok: (value) => Object.hash('Ok', value),
+    err: (error) => Object.hash('Err', error),
+  );
 }
 
 /// Represents a successful result containing a value.

@@ -39,9 +39,9 @@ void main() {
 
   // Example 5: Chaining operations with flatMap
   print('\nExample 5: Chaining operations');
-  final chainResult = parseNumber('50')
-      .flatMap((n) => divide(100, n))
-      .map((n) => n * 10);
+  final chainResult = parseNumber(
+    '50',
+  ).flatMap((n) => divide(100, n)).map((n) => n * 10);
   chainResult.when(
     ok: (value) => print('  Chain result: $value'),
     err: (error) => print('  Chain error: $error'),
@@ -49,9 +49,9 @@ void main() {
 
   // Example 6: Error propagation
   print('\nExample 6: Error propagation in chains');
-  final errorChain = parseNumber('invalid')
-      .flatMap((n) => divide(100, n))
-      .map((n) => n * 10);
+  final errorChain = parseNumber(
+    'invalid',
+  ).flatMap((n) => divide(100, n)).map((n) => n * 10);
   errorChain.when(
     ok: (value) => print('  Chain result: $value'),
     err: (error) => print('  Chain error: $error'),
@@ -81,9 +81,9 @@ void main() {
 
   // Example 9: Complex real-world example
   print('\nExample 9: Complex workflow');
-  final workflow = validateAge('25')
-      .flatMap((age) => checkEligibility(age))
-      .map((msg) => msg.toUpperCase());
+  final workflow = validateAge(
+    '25',
+  ).flatMap((age) => checkEligibility(age)).map((msg) => msg.toUpperCase());
 
   workflow.when(
     ok: (msg) => print('  ✓ $msg'),
