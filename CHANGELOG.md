@@ -1,4 +1,4 @@
-## 0.1.0
+## 1.0.0
 
 - 🎉 Initial stable release
 - ✨ Implemented `MayrResult<T, E>` type with `Ok` and `Err` variants
@@ -7,3 +7,7 @@
 - 📝 Added comprehensive documentation and examples
 - ✅ Added extensive test coverage
 - 🚀 Full support for type inference and null safety
+
+## 0.1.0
+
+- Initial version
