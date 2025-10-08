@@ -3,7 +3,7 @@ description: >
   A lightweight functional-style Result type for Dart that represents success or failure outcomes.
 
   Simplifies error handling by replacing exceptions with safe, expressive result objects.
-version: 0.1.0
+version: 1.0.0
 homepage: https://github.com/YoungMayor/mayr_dart_result
 repository: https://github.com/YoungMayor/mayr_dart_result
 issue_tracker: https://github.com/YoungMayor/mayr_dart_result/issues
