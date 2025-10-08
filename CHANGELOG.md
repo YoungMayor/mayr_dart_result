@@ -1,4 +1,4 @@
-## 1.0.0
+## 0.1.0
 
 - 🎉 Initial stable release
 - ✨ Implemented `MayrResult<T, E>` type with `Ok` and `Err` variants
