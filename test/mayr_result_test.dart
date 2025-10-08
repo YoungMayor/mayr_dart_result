@@ -1,4 +1,4 @@
-import 'package:mayr_dart_result/mayr_dart_result.dart';
+import 'package:mayr_result/mayr_result.dart';
 import 'package:test/test.dart';
 
 void main() {
